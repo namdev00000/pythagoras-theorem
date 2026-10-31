@@ -1,0 +1,887 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Pythagoras' Theorem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: graph paper / draftsman's blueprint. One long scroll; a bold formula on a grid opens it,
+   then each section is a worksheet with live, adjustable diagrams. Bold moment = the hero formula. */
+:root {
+  --bg: #f2f2f2;
+  --hero-img: url("bg-light.jpg"); --hero-fade: #ffffff; --hero-base: #ffffff;
+  --paper: #ffffff;
+  --ink: #0a0a0a;
+  --muted: #55555c;
+  --grid: #d2d2d2;
+  --line: #dadada;
+  --blue: #1f5fd6;
+  --red: #d93d22;
+  --green: #1b8458;
+  --blue-soft: rgba(31, 95, 214, 0.14);
+  --red-soft: rgba(217, 61, 34, 0.14);
+  --ink-soft: rgba(0, 0, 0, 0.09);
+  --font-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --hero-img: url("bg.jpg"); --hero-fade: #000000; --hero-base: #000000; --paper: #0b0b0b; --ink: #f5f5f5; --muted: #a3a3a3; --grid: #262626; --line: #2c2c2c;
+    --blue: #6ea2ff; --red: #ff7054; --green: #4fd39b;
+    --blue-soft: rgba(110, 162, 255, 0.18); --red-soft: rgba(255, 112, 84, 0.18); --ink-soft: rgba(255, 255, 255, 0.12);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --hero-img: url("bg.jpg"); --hero-fade: #000000; --hero-base: #000000; --paper: #0b0b0b; --ink: #f5f5f5; --muted: #a3a3a3; --grid: #262626; --line: #2c2c2c;
+  --blue: #6ea2ff; --red: #ff7054; --green: #4fd39b;
+  --blue-soft: rgba(110, 162, 255, 0.18); --red-soft: rgba(255, 112, 84, 0.18); --ink-soft: rgba(255, 255, 255, 0.12);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.65;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.05; margin: 0; }
+p { margin: 0; }
+sup { line-height: 0; }
+.wrap { max-width: 1040px; margin: 0 auto; }
+.mono { font-family: var(--font-mono); }
+.a-col { color: var(--blue); }
+.b-col { color: var(--red); }
+
+/* top bar */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.bar-in { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 16px; height: 52px; }
+.logo { font-family: var(--font-display); font-weight: 800; font-size: 18px; white-space: nowrap; }
+.logo span { color: var(--red); }
+.links { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.links::-webkit-scrollbar { display: none; }
+.links a { color: var(--muted); text-decoration: none; font-size: 14px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+.links a:hover, .links a:focus-visible { background: var(--ink-soft); color: var(--ink); }
+.tbtn { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; font-size: 16px; }
+.tbtn:hover { border-color: var(--blue); }
+.progress { position: absolute; left: 0; bottom: -1px; height: 3px; width: 100%; background: var(--red); transform-origin: left; transform: scaleX(0); }
+
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* hero */
+.hero {
+  --bg: rgba(255, 255, 255, 0.72); --ink: #0a0a0a; --muted: #444449; --line: rgba(0, 0, 0, 0.28);
+  --grid: rgba(0, 0, 0, 0.09); --ink-soft: rgba(0, 0, 0, 0.10); --red: #d93d22; --blue: #1f5fd6;
+  color: var(--ink);
+  position: relative; min-height: min(86svh, 760px);
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  display: grid; place-items: center; text-align: center; overflow: hidden;
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(var(--grid) 2px, transparent 2px),
+    linear-gradient(90deg, var(--grid) 2px, transparent 2px),
+    var(--hero-img);
+  background-color: var(--hero-base);
+  background-size: 32px 32px, 32px 32px, 160px 160px, 160px 160px, cover;
+  background-position: calc(var(--mx, 0) * -12px) calc(var(--my, 0) * -12px), calc(var(--mx, 0) * -12px) calc(var(--my, 0) * -12px), calc(var(--mx, 0) * -12px) calc(var(--my, 0) * -12px), calc(var(--mx, 0) * -12px) calc(var(--my, 0) * -12px), center;
+  background-repeat: repeat, repeat, repeat, repeat, no-repeat;
+  border-bottom: 1px solid var(--line);
+}
+.hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 35%, var(--hero-fade) 100%); pointer-events: none; opacity: .8; }
+.hero-in { position: relative; z-index: 1; padding-block: 56px; display: grid; gap: 22px; justify-items: center; }
+.eyebrow { font-family: var(--font-mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); background: var(--bg); padding: 4px 10px; border: 1px solid var(--line); }
+.hero h1 { font-weight: 800; font-size: clamp(40px, 8.5vw, 104px); letter-spacing: -0.02em; background: var(--bg); padding: 0 .2em; }
+.formula { font-family: var(--font-display); font-weight: 800; font-size: clamp(54px, 13vw, 170px); line-height: 1; letter-spacing: -0.03em; display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .22em; background: var(--bg); padding: .06em .16em .1em; border: 2px solid var(--ink); box-shadow: 8px 8px 0 var(--ink-soft); backdrop-filter: blur(2px); }
+.formula span { cursor: default; transition: transform .2s; display: inline-block; }
+.formula span:hover { transform: translateY(-6px) rotate(-2deg); }
+.formula .op { color: var(--muted); }
+.hero-sub { max-width: 34ch; color: var(--muted); font-size: 19px; background: var(--bg); padding: 2px 8px; }
+.cue { font-family: var(--font-mono); font-size: 13px; color: var(--muted); display: inline-flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; background: var(--bg); padding: 2px 8px; }
+.cue i { font-style: normal; animation: bob 1.6s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(6px); } }
+
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero { --bg: rgba(0, 0, 0, 0.62); --ink: #ffffff; --muted: #cfcfcf; --line: rgba(255, 255, 255, 0.3); --grid: rgba(255, 255, 255, 0.11); --ink-soft: rgba(255, 255, 255, 0.14); --red: #ff7054; --blue: #6ea2ff; }
+}
+:root[data-theme="dark"] .hero { --bg: rgba(0, 0, 0, 0.62); --ink: #ffffff; --muted: #cfcfcf; --line: rgba(255, 255, 255, 0.3); --grid: rgba(255, 255, 255, 0.11); --ink-soft: rgba(255, 255, 255, 0.14); --red: #ff7054; --blue: #6ea2ff; }
+
+/* scattered maths symbols */
+.syms { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.sym {
+  position: absolute; font-family: var(--font-display); font-weight: 800; line-height: 1;
+  color: var(--c, var(--ink)); opacity: var(--o, .5);
+  translate: calc(var(--mx, 0) * var(--p, 24) * -1px) calc(var(--my, 0) * var(--p, 24) * -1px);
+  animation: drift var(--d, 7s) ease-in-out infinite alternate; animation-delay: var(--dl, 0s);
+}
+@keyframes drift { from { transform: rotate(var(--r, 0deg)) translateY(0); } to { transform: rotate(calc(var(--r, 0deg) + 9deg)) translateY(-14px); } }
+@media (prefers-reduced-motion: reduce) { .sym { animation: none; transform: rotate(var(--r, 0deg)); } }
+
+/* sections */
+section.sec { padding-block: clamp(64px, 10vw, 120px) 0; }
+.kicker { font-family: var(--font-mono); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+.sec h2 { font-size: clamp(32px, 5.5vw, 60px); font-weight: 800; letter-spacing: -0.015em; max-width: 18ch; }
+.lead { margin-top: 18px; max-width: 62ch; color: var(--muted); font-size: 19px; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(24px, 4vw, 56px); margin-top: 40px; align-items: start; }
+.panel { background: var(--paper); border: 1px solid var(--line); padding: clamp(16px, 3vw, 28px); min-width: 0; }
+.panel h3 { font-size: 22px; margin-bottom: 10px; }
+.prose { display: grid; gap: 16px; min-width: 0; }
+.prose p { max-width: 60ch; }
+.term { display: grid; gap: 10px; margin-top: 8px; }
+.term div { display: grid; grid-template-columns: 14px 1fr; gap: 12px; align-items: baseline; }
+.dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+svg { display: block; max-width: 100%; height: auto; }
+svg.ic { display: inline-block; width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.2em; }
+.kicker, .tag, .when, .eyebrow, .links a { display: inline-flex; align-items: center; gap: 8px; }
+.kicker { display: flex; }
+.ev .when { display: flex; }
+.tag { display: flex; }
+.ic-lg { width: 20px !important; height: 20px !important; }
+.tbtn { display: inline-grid; place-items: center; padding: 0; }
+.tbtn svg.ic { width: 18px; height: 18px; }
+.tbtn .i-sun { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tbtn .i-sun { display: inline-block; } :root:not([data-theme="light"]) .tbtn .i-moon { display: none; } }
+:root[data-theme="dark"] .tbtn .i-sun { display: inline-block; }
+:root[data-theme="dark"] .tbtn .i-moon { display: none; }
+.cap { margin-top: 12px; font-size: 14px; color: var(--muted); max-width: 64ch; }
+
+/* controls */
+.ctrl { display: grid; gap: 14px; margin-top: 16px; }
+.row { display: grid; grid-template-columns: 90px minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.row label { font-family: var(--font-mono); font-size: 14px; }
+.row output { font-family: var(--font-mono); font-size: 15px; text-align: right; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--blue); height: 28px; }
+input[type="number"], select {
+  width: 100%; font: inherit; font-family: var(--font-mono); font-size: 18px; padding: 10px 12px;
+  background: var(--bg); color: var(--ink); border: 1.5px solid var(--ink); border-radius: 0; font-variant-numeric: tabular-nums;
+}
+input[type="number"]:disabled { opacity: .55; border-style: dashed; }
+.readout { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 16px; font-family: var(--font-mono); font-size: 15px; font-variant-numeric: tabular-nums; }
+.readout b { font-weight: 500; }
+.chip { display: inline-block; font-family: var(--font-mono); font-size: 14px; padding: 4px 10px; border: 1px solid var(--ink); background: var(--bg); color: var(--ink); cursor: pointer; border-radius: 0; }
+.chip:hover { background: var(--ink); color: var(--bg); }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 13px; padding: 3px 10px; border-radius: 99px; border: 1px solid currentColor; }
+.pill.ok { color: var(--green); } .pill.no { color: var(--red); }
+
+/* history */
+.timeline { margin-top: 44px; display: grid; gap: 0; position: relative; border-left: 2px solid var(--ink); margin-left: 8px; }
+.ev { position: relative; padding: 0 0 28px 28px; }
+.ev::before { content: ""; position: absolute; left: -9px; top: 10px; width: 16px; height: 16px; background: var(--bg); border: 2px solid var(--red); border-radius: 50%; }
+.ev details { background: var(--paper); border: 1px solid var(--line); }
+.ev summary { cursor: pointer; list-style: none; padding: 16px 18px; display: grid; gap: 4px; }
+.ev summary::-webkit-details-marker { display: none; }
+.ev summary:hover { background: var(--ink-soft); }
+.when { font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; color: var(--red); text-transform: uppercase; }
+.ev h3 { font-size: 24px; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.ev h3::after { content: "+"; font-family: var(--font-mono); color: var(--muted); transition: transform .2s; }
+.ev details[open] h3::after { content: "–"; }
+.ev .short { color: var(--muted); font-size: 16px; }
+.ev .more { padding: 0 18px 18px; display: grid; gap: 12px; max-width: 70ch; }
+.ev .more .pts { font-family: var(--font-mono); font-size: 14px; color: var(--ink); background: var(--bg); border: 1px dashed var(--line); padding: 10px 12px; overflow-x: auto; }
+.origin { display: inline-block; font-size: 12px; font-family: var(--font-mono); color: var(--muted); border: 1px solid var(--line); padding: 1px 8px; margin-top: 4px; width: fit-content; }
+
+/* calculator */
+.calc { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); }
+.tabs { display: flex; flex-wrap: wrap; gap: 0; border: 1.5px solid var(--ink); width: fit-content; max-width: 100%; }
+.tabs button { font: inherit; font-size: 15px; padding: 9px 14px; background: var(--bg); color: var(--ink); border: 0; border-right: 1.5px solid var(--ink); cursor: pointer; }
+.tabs button:last-child { border-right: 0; }
+.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.fields label { display: grid; gap: 6px; font-family: var(--font-mono); font-size: 14px; }
+.answer { margin-top: 20px; padding: 16px 18px; background: var(--bg); border: 1.5px solid var(--ink); }
+.answer .big { font-family: var(--font-display); font-weight: 800; font-size: clamp(30px, 5vw, 44px); line-height: 1.1; overflow-wrap: anywhere; }
+.steps { margin-top: 12px; display: grid; gap: 4px; font-family: var(--font-mono); font-size: 15px; overflow-x: auto; }
+.steps div { white-space: nowrap; }
+.err { color: var(--red); font-family: var(--font-mono); font-size: 15px; }
+.triples { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.triples small { font-family: var(--font-mono); color: var(--muted); font-size: 13px; width: 100%; }
+.sub { margin-top: 28px; padding-top: 22px; border-top: 1px dashed var(--line); }
+
+/* examples */
+.ex-grid { margin-top: 44px; display: grid; gap: 22px; }
+.ex { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(16px, 3vw, 36px); background: var(--paper); border: 1px solid var(--line); padding: clamp(16px, 3vw, 28px); }
+.ex:nth-child(even) .ex-txt { order: 2; }
+.ex-txt { min-width: 0; display: grid; gap: 10px; align-content: start; }
+.ex-txt .tag { font-family: var(--font-mono); font-size: 13px; letter-spacing: .1em; color: var(--red); text-transform: uppercase; }
+.ex-txt h3 { font-size: 28px; }
+.ex-txt p { color: var(--muted); font-size: 16px; }
+.ex-fig { min-width: 0; background: var(--bg); border: 1px solid var(--line); padding: 14px; }
+.ex-fig svg { width: 100%; }
+.ex .ctrl { margin-top: 10px; }
+.dragsvg { touch-action: none; cursor: crosshair; }
+.handle { cursor: grab; }
+
+/* note */
+.note { margin-top: 36px; max-width: 640px; background: var(--paper); border: 1.5px solid var(--ink); box-shadow: 8px 8px 0 var(--ink-soft); padding: clamp(20px, 4vw, 36px); display: grid; gap: 14px; }
+.note p { font-size: 18px; }
+.sign { font-family: var(--font-display); font-weight: 800; font-size: 26px; }
+.sign small { display: block; font-family: var(--font-mono); font-weight: 400; font-size: 13px; color: var(--muted); letter-spacing: .08em; }
+footer { margin-top: 80px; padding-block: 28px 56px; border-top: 2px solid var(--ink); color: var(--ink); font-size: 16px; font-weight: 500; font-family: var(--font-mono); display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+footer svg.ic { width: 20px; height: 20px; }
+.credit { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--ink); background: var(--bg); border: 1px solid var(--line); padding: 4px 12px; }
+
+.rise.in { animation: rise .6s ease-out; }
+@keyframes rise { from { transform: translateY(18px); } to { transform: none; } }
+
+@media (max-width: 820px) {
+  .split, .calc, .ex { grid-template-columns: minmax(0, 1fr); }
+  .ex:nth-child(even) .ex-txt { order: 0; }
+  .links a { padding: 6px 8px; }
+  .logo { display: none; }
+  .links { margin-left: 0; flex: 1; }
+}
+@media (max-width: 480px) {
+  .row { grid-template-columns: 70px minmax(0, 1fr) 56px; gap: 8px; }
+  body { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cue i, .rise.in { animation: none; }
+  .formula span { transition: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+<symbol id="i-proof" viewBox="0 0 24 24"><path d="M3 21V9l12 12H3zM16 3h5v5h-5z"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></symbol>
+<symbol id="i-world" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></symbol>
+<symbol id="i-ladder" viewBox="0 0 24 24"><path d="M7 3v18M17 3v18M7 7h10M7 12h10M7 17h10"/></symbol>
+<symbol id="i-tv" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h5a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h5"/></symbol>
+<symbol id="i-square" viewBox="0 0 24 24"><path d="M3 21V4l17 17H3zM7 21v-3M11 21v-6M3 14h3"/></symbol>
+<symbol id="i-ramp" viewBox="0 0 24 24"><path d="M3 20h18V8L3 20z"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+<symbol id="i-tablet" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2V5zM4 19a2 2 0 0 1 2-2h13"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 12h16M9 4v16M15 4v16"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></symbol>
+<symbol id="i-triangle" viewBox="0 0 24 24"><path d="M4 20V5l16 15H4z"/><path d="M4 16h4v4"/></symbol>
+</defs></svg>
+<header class="bar">
+  <div class="bar-in">
+    <div class="logo"><svg class="ic ic-lg" aria-hidden="true"><use href="#i-triangle"/></svg> a²+b²=<span>c²</span></div>
+    <nav class="links" aria-label="Sections">
+      <a href="#intro"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>Idea</a>
+      <a href="#proof"><svg class="ic" aria-hidden="true"><use href="#i-proof"/></svg>Proof</a>
+      <a href="#history"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>History</a>
+      <a href="#calculator"><svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg>Calculator</a>
+      <a href="#real-life"><svg class="ic" aria-hidden="true"><use href="#i-world"/></svg>Real life</a>
+      <a href="#note"><svg class="ic" aria-hidden="true"><use href="#i-pen"/></svg>Note</a>
+    </nav>
+    <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark theme" title="Switch theme"><svg class="ic i-moon" aria-hidden="true"><use href="#i-moon"/></svg><svg class="ic i-sun" aria-hidden="true"><use href="#i-sun"/></svg></button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main>
+<section class="hero" id="top" aria-label="Pythagoras' theorem">
+<div class="syms" aria-hidden="true">
+  <span class="sym" style="left:5%;top:10%;font-size:72px;--r:-14deg;--o:0.8;--c:var(--blue);--p:12;--d:6.0s;--dl:-0s">π</span>
+  <span class="sym" style="left:24%;top:5%;font-size:48px;--r:12deg;--o:0.5;--p:19;--d:7.3s;--dl:-1s">+</span>
+  <span class="sym" style="left:46%;top:3%;font-size:52px;--r:-6deg;--o:0.7;--c:var(--red);--p:26;--d:8.6s;--dl:-2s">÷</span>
+  <span class="sym" style="left:70%;top:6%;font-size:56px;--r:10deg;--o:0.55;--p:33;--d:9.9s;--dl:-3s">√</span>
+  <span class="sym" style="left:88%;top:9%;font-size:62px;--r:14deg;--o:0.75;--c:var(--red);--p:40;--d:11.2s;--dl:-4s">%</span>
+  <span class="sym" style="left:12%;top:30%;font-size:46px;--r:-10deg;--o:0.5;--p:17;--d:6.0s;--dl:-5s">=</span>
+  <span class="sym" style="left:3%;top:48%;font-size:54px;--r:16deg;--o:0.5;--p:24;--d:7.3s;--dl:-0s">×</span>
+  <span class="sym" style="left:91%;top:34%;font-size:60px;--r:-12deg;--o:0.7;--c:var(--blue);--p:31;--d:8.6s;--dl:-1s">∠</span>
+  <span class="sym" style="left:94%;top:56%;font-size:52px;--r:8deg;--o:0.45;--p:38;--d:9.9s;--dl:-2s">−</span>
+  <span class="sym" style="left:8%;top:68%;font-size:46px;--r:12deg;--o:0.45;--p:15;--d:11.2s;--dl:-3s">π</span>
+  <span class="sym" style="left:20%;top:88%;font-size:64px;--r:-12deg;--o:0.7;--c:var(--blue);--p:22;--d:6.0s;--dl:-4s">÷</span>
+  <span class="sym" style="left:38%;top:92%;font-size:46px;--r:8deg;--o:0.45;--p:29;--d:7.3s;--dl:-5s">=</span>
+  <span class="sym" style="left:58%;top:90%;font-size:58px;--r:-10deg;--o:0.7;--c:var(--red);--p:36;--d:8.6s;--dl:-0s">+</span>
+  <span class="sym" style="left:76%;top:88%;font-size:50px;--r:12deg;--o:0.5;--p:13;--d:9.9s;--dl:-1s">%</span>
+  <span class="sym" style="left:90%;top:80%;font-size:66px;--r:-8deg;--o:0.55;--p:20;--d:11.2s;--dl:-2s">θ</span>
+  <span class="sym" style="left:30%;top:20%;font-size:40px;--r:6deg;--o:0.3;--p:27;--d:6.0s;--dl:-3s">∞</span>
+  <span class="sym" style="left:80%;top:22%;font-size:42px;--r:-6deg;--o:0.3;--p:34;--d:7.3s;--dl:-4s">²</span>
+  <span class="sym" style="left:62%;top:10%;font-size:38px;--r:14deg;--o:0.3;--p:41;--d:8.6s;--dl:-5s">×</span>
+  <span class="sym" style="left:14%;top:50%;font-size:36px;--r:-14deg;--o:0.3;--p:18;--d:9.9s;--dl:-0s">−</span>
+  <span class="sym" style="left:86%;top:68%;font-size:38px;--r:10deg;--o:0.4;--c:var(--blue);--p:25;--d:11.2s;--dl:-1s">√</span>
+  <span class="sym" style="left:6%;top:87%;font-size:54px;--r:-10deg;--o:0.6;--c:var(--red);--p:32;--d:6.0s;--dl:-2s">∑</span>
+  <span class="sym" style="left:50%;top:16%;font-size:34px;--r:8deg;--o:0.25;--p:39;--d:7.3s;--dl:-3s">△</span>
+</div>
+  <div class="hero-in">
+    <div class="eyebrow"><svg class="ic" aria-hidden="true"><use href="#i-triangle"/></svg>Mathematics &middot; Geometry</div>
+    <h1>Pythagoras' Theorem</h1>
+    <div class="formula" aria-label="a squared plus b squared equals c squared">
+      <span class="a-col">a²</span><span class="op">+</span><span class="b-col">b²</span><span class="op">=</span><span>c²</span>
+    </div>
+    <p class="hero-sub">In a right triangle, the square on the longest side equals the sum of the squares on the other two.</p>
+    <div class="credit">Built by Namdev with Claude Sonnet 5.5.</div>
+    <a class="cue" href="#intro">scroll<i><svg class="ic ic-lg" aria-hidden="true"><use href="#i-down"/></svg></i></a>
+  </div>
+</section>
+
+<div class="wrap">
+
+<!-- INTRODUCTION -->
+<section class="sec rise" id="intro">
+  <div class="kicker"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg>The idea</div>
+  <h2>Three sides, one rule.</h2>
+  <p class="lead">Take any triangle with one square corner. Measure its two shorter sides, square each number, and add them. The total is exactly the square of the longest side. This works for every right triangle, large or small.</p>
+  <div class="split">
+    <div class="prose">
+      <div class="panel">
+        <h3>Meet the sides</h3>
+        <div class="term">
+          <div><span class="dot" style="background:var(--blue)"></span><p><b class="a-col">a</b> and <b class="b-col">b</b> are the <b>legs</b>. They meet at the 90° corner.</p></div>
+          <div><span class="dot" style="background:var(--ink)"></span><p><b>c</b> is the <b>hypotenuse</b>. It sits opposite the right angle and is always the longest side.</p></div>
+        </div>
+      </div>
+      <p>"Squared" means a number times itself. A side of 3 gives a square whose area is 3 × 3 = 9. The theorem is really a statement about <b>area</b>: the two small squares, put together, cover exactly the same area as the big one.</p>
+      <p>Try it on the right. Slide the legs and watch the areas. Blue plus red always equals the grey square, to the last digit.</p>
+    </div>
+    <div class="panel">
+      <svg id="sqSvg" viewBox="-11 -21 32 32" role="img" aria-label="Right triangle with a square drawn on each side"></svg>
+      <div class="ctrl">
+        <div class="row"><label for="sqA" class="a-col">leg a</label><input id="sqA" type="range" min="1" max="10" step="1" value="3"><output id="sqAo">3</output></div>
+        <div class="row"><label for="sqB" class="b-col">leg b</label><input id="sqB" type="range" min="1" max="10" step="1" value="4"><output id="sqBo">4</output></div>
+      </div>
+      <div class="readout" id="sqRead"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="sec rise" id="proof">
+  <div class="kicker"><svg class="ic" aria-hidden="true"><use href="#i-proof"/></svg>How it's built</div>
+  <h2>A proof you can see.</h2>
+  <p class="lead">There are hundreds of proofs. This one uses nothing but four identical triangles and two big squares, and it is easy to follow with your eyes alone.</p>
+  <div class="panel" style="margin-top:40px">
+    <svg id="prSvg" viewBox="-1 -1 46 22" role="img" aria-label="Two equal big squares each holding four copies of the same triangle"></svg>
+    <div class="ctrl" style="max-width:520px">
+      <div class="row"><label for="prA" class="a-col">leg a</label><input id="prA" type="range" min="1" max="9" step="1" value="3"><output id="prAo">3</output></div>
+      <div class="row"><label for="prB" class="b-col">leg b</label><input id="prB" type="range" min="1" max="9" step="1" value="4"><output id="prBo">4</output></div>
+    </div>
+    <div class="split" style="margin-top:28px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:20px">
+      <div class="prose"><h3>Step 1: two equal squares</h3><p>Both big squares have side <b>a + b</b>, so both have the same area, (a + b)².</p></div>
+      <div class="prose"><h3>Step 2: same four triangles</h3><p>Each big square holds four copies of the triangle. Left, they leave a tilted square of side c. Right, they leave two squares, a² and b².</p></div>
+      <div class="prose"><h3>Step 3: take them away</h3><p>Remove the same four triangles from both. What remains must have equal area, so <b>c² = a² + b²</b>.</p></div>
+    </div>
+    <p class="cap" id="prRead"></p>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="sec rise" id="history">
+  <div class="kicker"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>History</div>
+  <h2>Older than Pythagoras.</h2>
+  <p class="lead">The rule carries his name, but people in several places knew it long before he lived. Open each stop to read more.</p>
+  <div class="timeline">
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-tablet"/></svg>c. 1800 BCE</span><h3>Babylon</h3><span class="short">Clay tablets with right-triangle numbers.</span></summary>
+      <div class="more">
+        <p>The tablet Plimpton 322 lists number sets that behave like Pythagorean triples. Another tablet, YBC 7289, gives the diagonal of a square with side 1 as 1;24,51,10 in base 60. That is about 1.41421296, very close to √2.</p>
+        <div class="pts">1;24,51,10 (base 60) = 1 + 24/60 + 51/3600 + 10/216000 ≈ 1.41421</div>
+        <span class="origin">Mesopotamia, today's Iraq</span>
+      </div></details></div>
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg>c. 800 BCE</span><h3>India: the Sulba Sutras</h3><span class="short">Altars built with the rule.</span></summary>
+      <div class="more">
+        <p>Baudhayana's Sulba Sutra states that the rope along the diagonal of a rectangle makes an area equal to the two areas made by the rope along its length and its breadth. Priests used this to lay out the precise shapes of Vedic fire altars, and listed triples such as 3-4-5 and 5-12-13.</p>
+        <span class="origin">Indian subcontinent</span>
+      </div></details></div>
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-user"/></svg>c. 570 – 495 BCE</span><h3>Pythagoras of Samos</h3><span class="short">The name that stuck.</span></summary>
+      <div class="more">
+        <p>Pythagoras founded a school of mathematics, music and philosophy at Croton in southern Italy. Later Greek writers credit him with the first proof. None of his own writing survives, so what he personally worked out is uncertain. His followers gave the theorem his name.</p>
+        <span class="origin">Greece and southern Italy</span>
+      </div></details></div>
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>c. 300 BCE</span><h3>Euclid's Elements</h3><span class="short">The classic written proof.</span></summary>
+      <div class="more">
+        <p>In Book I, Proposition 47, Euclid proves the theorem using areas of squares and triangles. Proposition 48 proves the reverse: if c² = a² + b², the triangle must have a right angle.</p>
+        <span class="origin">Alexandria, Egypt</span>
+      </div></details></div>
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-grid"/></svg>c. 200 BCE – 3rd century CE</span><h3>China: the gougu rule</h3><span class="short">A diagram with a proof by rearranging.</span></summary>
+      <div class="more">
+        <p>The text Zhoubi Suanjing describes the "gou-gu" rule using a 3-4-5 triangle. In the 3rd century, Liu Hui wrote a commentary that proves it by cutting and rearranging squares, much like the proof in this page.</p>
+        <span class="origin">China</span>
+      </div></details></div>
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg>c. 1150 CE</span><h3>Bhaskara II</h3><span class="short">A proof with one word: "Behold!"</span></summary>
+      <div class="more">
+        <p>The Indian mathematician Bhaskara II gave a rearrangement proof of the theorem. A famous account says his diagram was captioned simply "Behold!", trusting the picture to do the explaining.</p>
+        <span class="origin">India</span>
+      </div></details></div>
+    <div class="ev"><details>
+      <summary><span class="when"><svg class="ic" aria-hidden="true"><use href="#i-flag"/></svg>1876</span><h3>James Garfield's proof</h3><span class="short">A future US president adds one.</span></summary>
+      <div class="more">
+        <p>James A. Garfield, then a member of the US Congress and later president, published a proof based on the area of a trapezoid. Elisha Loomis's 1927 book <i>The Pythagorean Proposition</i> collects 370 different proofs.</p>
+        <span class="origin">United States</span>
+      </div></details></div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="sec rise" id="calculator">
+  <div class="kicker"><svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg>Calculator</div>
+  <h2>Find the missing side.</h2>
+  <p class="lead">Pick what you want to find, type the two sides you know, and the steps appear as you type. The triangle redraws to match.</p>
+  <div class="calc">
+    <div class="panel">
+      <div class="tabs" role="tablist" aria-label="What to find">
+        <button role="tab" id="m-c" aria-selected="true" type="button">Find c</button>
+        <button role="tab" id="m-a" aria-selected="false" type="button">Find a</button>
+        <button role="tab" id="m-b" aria-selected="false" type="button">Find b</button>
+      </div>
+      <div class="fields">
+        <label><span class="a-col">a (leg)</span><input id="inA" type="number" inputmode="decimal" min="0" step="any" value="3"></label>
+        <label><span class="b-col">b (leg)</span><input id="inB" type="number" inputmode="decimal" min="0" step="any" value="4"></label>
+        <label><span>c (hypotenuse)</span><input id="inC" type="number" inputmode="decimal" min="0" step="any" value="5" disabled></label>
+      </div>
+      <div class="answer" aria-live="polite">
+        <div class="big" id="calcBig">c = 5</div>
+        <div class="steps" id="calcSteps"></div>
+      </div>
+      <div class="triples">
+        <small>Try a whole-number triple</small>
+        <button class="chip" type="button" data-t="3,4">3-4-5</button>
+        <button class="chip" type="button" data-t="5,12">5-12-13</button>
+        <button class="chip" type="button" data-t="8,15">8-15-17</button>
+        <button class="chip" type="button" data-t="7,24">7-24-25</button>
+        <button class="chip" type="button" data-t="20,21">20-21-29</button>
+        <button class="chip" type="button" data-t="1,1">1-1-√2</button>
+      </div>
+    </div>
+    <div class="panel">
+      <svg id="calcSvg" viewBox="0 0 360 270" role="img" aria-label="Triangle drawn to scale from the calculator values"></svg>
+      <div class="sub">
+        <h3>Is it a right triangle?</h3>
+        <p class="cap" style="margin-top:0">Enter any three side lengths, in any order. The converse of the theorem tells you the answer.</p>
+        <div class="fields">
+          <label><span>side 1</span><input id="tx" type="number" inputmode="decimal" min="0" step="any" value="6"></label>
+          <label><span>side 2</span><input id="ty" type="number" inputmode="decimal" min="0" step="any" value="8"></label>
+          <label><span>side 3</span><input id="tz" type="number" inputmode="decimal" min="0" step="any" value="10"></label>
+        </div>
+        <div class="readout" id="chkOut" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REAL LIFE -->
+<section class="sec rise" id="real-life">
+  <div class="kicker"><svg class="ic" aria-hidden="true"><use href="#i-world"/></svg>Real life</div>
+  <h2>Six places it quietly works.</h2>
+  <p class="lead">Any time two straight lines meet at a right angle and you need the length of the slanted line between their ends, this theorem does the work. Move the controls in each picture.</p>
+  <div class="ex-grid">
+
+    <article class="ex">
+      <div class="ex-txt">
+        <div class="tag"><svg class="ic" aria-hidden="true"><use href="#i-ladder"/></svg>1 · Home and work</div>
+        <h3>Placing a ladder</h3>
+        <p>A 5 m ladder leans on a wall. The ground distance d and the wall height h form the legs, and the ladder is the hypotenuse, so h = √(5² − d²). Move the foot of the ladder to see how high it reaches.</p>
+        <div class="ctrl"><div class="row"><label for="ladD">foot d</label><input id="ladD" type="range" min="0.5" max="4.5" step="0.1" value="1.3"><output id="ladDo"></output></div></div>
+        <div class="readout" id="ladR"></div>
+      </div>
+      <div class="ex-fig"><svg id="ladSvg" viewBox="0 0 300 200" role="img" aria-label="Ladder leaning against a wall"></svg></div>
+    </article>
+
+    <article class="ex">
+      <div class="ex-txt">
+        <div class="tag"><svg class="ic" aria-hidden="true"><use href="#i-tv"/></svg>2 · Screens</div>
+        <h3>TV and phone sizes</h3>
+        <p>A screen is sold by its diagonal. The real width and height are the legs. For a ratio of w : h, the width is diagonal × w ÷ √(w² + h²). Pick a size and shape.</p>
+        <div class="ctrl">
+          <div class="row"><label for="tvD">diagonal</label><input id="tvD" type="range" min="5" max="100" step="1" value="55"><output id="tvDo"></output></div>
+          <div class="row"><label for="tvR">shape</label>
+            <select id="tvR" style="grid-column: 2 / 4"><option value="16,9" selected>16 : 9 (TV)</option><option value="4,3">4 : 3 (old TV)</option><option value="21,9">21 : 9 (ultrawide)</option><option value="19.5,9">19.5 : 9 (phone)</option></select></div>
+        </div>
+        <div class="readout" id="tvRd"></div>
+      </div>
+      <div class="ex-fig"><svg id="tvSvg" viewBox="0 0 300 200" role="img" aria-label="Screen drawn with its diagonal"></svg></div>
+    </article>
+
+    <article class="ex">
+      <div class="ex-txt">
+        <div class="tag"><svg class="ic" aria-hidden="true"><use href="#i-route"/></svg>3 · Getting around</div>
+        <h3>The shortcut across a field</h3>
+        <p>Walking along two sides of a rectangular ground covers a + b. Cutting across the diagonal covers √(a² + b²), which is always shorter. Change the ground and see how much you save.</p>
+        <div class="ctrl">
+          <div class="row"><label for="fdW">width</label><input id="fdW" type="range" min="20" max="200" step="5" value="80"><output id="fdWo"></output></div>
+          <div class="row"><label for="fdH">length</label><input id="fdH" type="range" min="20" max="200" step="5" value="60"><output id="fdHo"></output></div>
+        </div>
+        <div class="readout" id="fdR"></div>
+      </div>
+      <div class="ex-fig"><svg id="fdSvg" viewBox="0 0 300 200" role="img" aria-label="Rectangular field with the edge path and the diagonal shortcut"></svg></div>
+    </article>
+
+    <article class="ex">
+      <div class="ex-txt">
+        <div class="tag"><svg class="ic" aria-hidden="true"><use href="#i-square"/></svg>4 · Building</div>
+        <h3>Squaring a corner with 3-4-5</h3>
+        <p>Builders mark 3 units along one wall and 4 along the other. If the distance between the marks is exactly 5, the corner is a perfect 90°. Drag the measured diagonal and watch the angle.</p>
+        <div class="ctrl"><div class="row"><label for="cpD">diagonal</label><input id="cpD" type="range" min="4.4" max="5.6" step="0.01" value="5"><output id="cpDo"></output></div></div>
+        <div class="readout" id="cpR"></div>
+      </div>
+      <div class="ex-fig"><svg id="cpSvg" viewBox="0 0 300 200" role="img" aria-label="Two walls meeting at a corner with a measured diagonal"></svg></div>
+    </article>
+
+    <article class="ex">
+      <div class="ex-txt">
+        <div class="tag"><svg class="ic" aria-hidden="true"><use href="#i-ramp"/></svg>5 · Access</div>
+        <h3>Designing a ramp</h3>
+        <p>A ramp must climb a set height with a gentle slope. A slope of 1 : 12 means 12 cm of run for every 1 cm of rise. The ramp surface itself is the hypotenuse, which tells you how much material to buy.</p>
+        <div class="ctrl">
+          <div class="row"><label for="rpH">rise</label><input id="rpH" type="range" min="5" max="75" step="1" value="30"><output id="rpHo"></output></div>
+          <div class="row"><label for="rpS">slope</label>
+            <select id="rpS" style="grid-column: 2 / 4"><option value="20">1 : 20 (very gentle)</option><option value="12" selected>1 : 12 (common limit)</option><option value="8">1 : 8 (steep)</option></select></div>
+        </div>
+        <div class="readout" id="rpR"></div>
+      </div>
+      <div class="ex-fig"><svg id="rpSvg" viewBox="0 0 300 200" role="img" aria-label="Ramp as a right triangle"></svg></div>
+    </article>
+
+    <article class="ex">
+      <div class="ex-txt">
+        <div class="tag"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>6 · Maps and games</div>
+        <h3>Distance between two points</h3>
+        <p>Maps, GPS and video games find the straight-line distance between two points the same way. Subtract the x values and the y values to get the legs, then use √(dx² + dy²). Drag either point.</p>
+        <div class="readout" id="dsR"></div>
+      </div>
+      <div class="ex-fig"><svg id="dsSvg" class="dragsvg" viewBox="-1 -1 14 10" role="img" aria-label="Two draggable points on a grid with the distance between them"></svg></div>
+    </article>
+
+  </div>
+</section>
+
+<!-- NOTE -->
+<section class="sec rise" id="note">
+  <div class="kicker"><svg class="ic" aria-hidden="true"><use href="#i-pen"/></svg>A note</div>
+  <h2>From the maker.</h2>
+  <div class="note">
+    <p>I made this page to understand a² + b² = c² by seeing it, not by memorising it. The proof clicked for me when I moved the same four triangles around and the leftover areas matched.</p>
+    <p>Now I notice right angles everywhere: a ladder, a screen, a ramp, a path across a ground. One small rule, and it measures all of them.</p>
+    <div class="sign"><svg class="ic ic-lg" aria-hidden="true"><use href="#i-pen"/></svg> Namdev<small>MAKER OF THIS PAGE</small></div>
+  </div>
+</section>
+
+<footer><svg class="ic" aria-hidden="true"><use href="#i-pen"/></svg><span>Built by Namdev with Claude Sonnet 5.5.</span><span style="color:var(--muted)">a² + b² = c²</span></footer>
+</div>
+</main>
+
+<script>
+(function () {
+  /* open in the white theme by default; the toggle still switches to dark */
+  if (!document.documentElement.hasAttribute("data-theme")) document.documentElement.setAttribute("data-theme", "light");
+  var NS = "http://www.w3.org/2000/svg";
+  function $(id) { return document.getElementById(id); }
+  function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function fmt(n, d) { d = d == null ? 4 : d; return String(parseFloat(Number(n).toFixed(d))); }
+  function poly(pts, attrs) {
+    var s = '<polygon points="' + pts.map(function (p) { return p[0] + "," + p[1]; }).join(" ") + '" ';
+    for (var k in attrs) s += k + '="' + attrs[k] + '" ';
+    return s + "/>";
+  }
+  function text(x, y, t, attrs) {
+    var s = '<text x="' + x + '" y="' + y + '" ';
+    for (var k in attrs) s += k + '="' + attrs[k] + '" ';
+    return s + ">" + t + "</text>";
+  }
+  function bind(ids, fn) {
+    ids.forEach(function (id) { $(id).addEventListener("input", fn); });
+    fn();
+  }
+
+  /* theme toggle */
+  $("theme").addEventListener("click", function () {
+    var root = document.documentElement;
+    var cur = root.getAttribute("data-theme") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+    redrawAll();
+  });
+
+  /* scroll progress, hero parallax, reveal */
+  var prog = $("progress");
+  function onScroll() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.transform = "scaleX(" + (h > 0 ? Math.min(1, window.scrollY / h) : 0) + ")";
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+  var hero = document.querySelector(".hero");
+  hero.addEventListener("pointermove", function (e) {
+    var r = hero.getBoundingClientRect();
+    hero.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+    hero.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+  });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll(".rise").forEach(function (el) { io.observe(el); });
+  }
+
+  /* ---------- 1. squares on the sides ---------- */
+  function drawSquares() {
+    var a = +$("sqA").value, b = +$("sqB").value, c = Math.hypot(a, b);
+    $("sqAo").textContent = a; $("sqBo").textContent = b;
+    var blue = css("--blue"), red = css("--red"), ink = css("--ink"), line = css("--line");
+    var s = "";
+    for (var i = -10; i <= 21; i += 1) {
+      s += '<line x1="' + i + '" y1="-21" x2="' + i + '" y2="11" stroke="' + line + '" stroke-width="0.04"/>';
+      s += '<line x1="-11" y1="' + i + '" x2="21" y2="' + i + '" stroke="' + line + '" stroke-width="0.04"/>';
+    }
+    s += poly([[0, 0], [a, 0], [a, a], [0, a]], { fill: blue, "fill-opacity": 0.28, stroke: blue, "stroke-width": 0.12 });
+    s += poly([[0, 0], [0, -b], [-b, -b], [-b, 0]], { fill: red, "fill-opacity": 0.28, stroke: red, "stroke-width": 0.12 });
+    s += poly([[a, 0], [0, -b], [b, -b - a], [a + b, -a]], { fill: ink, "fill-opacity": 0.2, stroke: ink, "stroke-width": 0.12 });
+    s += poly([[0, 0], [a, 0], [0, -b]], { fill: css("--paper"), stroke: ink, "stroke-width": 0.16 });
+    var fs = 1.5;
+    if (a >= 2) s += text(a / 2, a / 2 + 0.5, "a²", { "text-anchor": "middle", "font-size": fs, fill: blue, "font-weight": 700, "font-family": "IBM Plex Mono, monospace" });
+    if (b >= 2) s += text(-b / 2, -b / 2 + 0.5, "b²", { "text-anchor": "middle", "font-size": fs, fill: red, "font-weight": 700, "font-family": "IBM Plex Mono, monospace" });
+    s += text((a + b) / 2, -(a + b) / 2 + 0.5, "c²", { "text-anchor": "middle", "font-size": fs, fill: ink, "font-weight": 700, "font-family": "IBM Plex Mono, monospace" });
+    $("sqSvg").innerHTML = s;
+    $("sqRead").innerHTML =
+      '<span class="a-col">a² = <b>' + (a * a) + '</b></span>' +
+      '<span class="b-col">b² = <b>' + (b * b) + '</b></span>' +
+      '<span>a² + b² = <b>' + (a * a + b * b) + '</b></span>' +
+      '<span>c = √' + (a * a + b * b) + ' ≈ <b>' + fmt(c, 3) + '</b></span>';
+  }
+
+  /* ---------- 2. rearrangement proof ---------- */
+  function drawProof() {
+    var a = +$("prA").value, b = +$("prB").value, S = a + b, k = 20 / S;
+    $("prAo").textContent = a; $("prBo").textContent = b;
+    var blue = css("--blue"), red = css("--red"), ink = css("--ink"), paper = css("--paper");
+    var tri = { fill: paper, stroke: ink, "stroke-width": 1.5, "vector-effect": "non-scaling-stroke" };
+    var sq = function (fill, op) { return { fill: fill, "fill-opacity": op, stroke: ink, "stroke-width": 1.5, "vector-effect": "non-scaling-stroke" }; };
+    var frame = { fill: "none", stroke: ink, "stroke-width": 2.5, "vector-effect": "non-scaling-stroke" };
+    var L = "", R = "";
+    L += poly([[a, 0], [S, a], [b, S], [0, b]], sq(ink, 0.22));
+    L += poly([[0, 0], [a, 0], [0, b]], tri) + poly([[a, 0], [S, 0], [S, a]], tri) +
+         poly([[S, a], [S, S], [b, S]], tri) + poly([[0, b], [b, S], [0, S]], tri);
+    L += poly([[0, 0], [S, 0], [S, S], [0, S]], frame);
+    var lab = 1.5 / k, mono = "IBM Plex Mono, monospace";
+    L += text((a + b) / 2, (a + b) / 2 + lab * 0.35, "c²", { "text-anchor": "middle", "font-size": lab, fill: ink, "font-weight": 700, "font-family": mono });
+    R += poly([[0, 0], [a, 0], [a, a], [0, a]], sq(blue, 0.28));
+    R += poly([[a, a], [S, a], [S, S], [a, S]], sq(red, 0.28));
+    R += poly([[a, 0], [S, 0], [S, a]], tri) + poly([[a, 0], [a, a], [S, a]], tri);
+    R += poly([[0, a], [a, a], [a, S]], tri) + poly([[0, a], [0, S], [a, S]], tri);
+    R += poly([[0, 0], [S, 0], [S, S], [0, S]], frame);
+    R += text(a / 2, a / 2 + lab * 0.35, "a²", { "text-anchor": "middle", "font-size": lab, fill: blue, "font-weight": 700, "font-family": mono });
+    R += text(a + b / 2, a + b / 2 + lab * 0.35, "b²", { "text-anchor": "middle", "font-size": lab, fill: red, "font-weight": 700, "font-family": mono });
+    $("prSvg").innerHTML =
+      '<g transform="translate(0,0) scale(' + k + ')">' + L + "</g>" +
+      '<g transform="translate(24,0) scale(' + k + ')">' + R + "</g>" +
+      text(10, 20.9, "c² and four triangles", { "text-anchor": "middle", "font-size": 0.9, fill: css("--muted"), "font-family": mono }) +
+      text(34, 20.9, "a² + b² and the same four triangles", { "text-anchor": "middle", "font-size": 0.9, fill: css("--muted"), "font-family": mono });
+    $("prRead").textContent = "With a = " + a + " and b = " + b + ": each big square has area (" + a + " + " + b + ")² = " + (S * S) +
+      ". The four triangles take up 2 × " + a + " × " + b + " = " + (2 * a * b) + ", leaving " + (a * a + b * b) + " in both squares: " + (a * a) + " + " + (b * b) + " on the right, and c² on the left.";
+  }
+
+  /* ---------- 3. calculator ---------- */
+  var mode = "c";
+  ["c", "a", "b"].forEach(function (m) {
+    $("m-" + m).addEventListener("click", function () {
+      mode = m;
+      ["c", "a", "b"].forEach(function (x) { $("m-" + x).setAttribute("aria-selected", x === m ? "true" : "false"); });
+      var ids = { a: "inA", b: "inB", c: "inC" };
+      Object.keys(ids).forEach(function (k) { $(ids[k]).disabled = (k === m); });
+      calc();
+    });
+  });
+  function drawTri(a, b, c) {
+    var blue = css("--blue"), red = css("--red"), ink = css("--ink");
+    var W = 360, H = 270, pad = 46;
+    var sc = Math.min((W - 2 * pad) / a, (H - 2 * pad) / b);
+    var w = a * sc, h = b * sc, x0 = (W - w) / 2, y0 = (H + h) / 2;
+    var s = poly([[x0, y0], [x0 + w, y0], [x0, y0 - h]], { fill: css("--blue-soft"), stroke: ink, "stroke-width": 2.5, "stroke-linejoin": "round" });
+    var m = Math.min(16, w / 3, h / 3);
+    s += '<path d="M' + (x0 + m) + "," + y0 + " v" + (-m) + " h" + (-m) + '" fill="none" stroke="' + ink + '" stroke-width="1.5"/>';
+    var f = "font-size=\"17\" font-family=\"IBM Plex Mono, monospace\" font-weight=\"600\"";
+    s += '<text x="' + (x0 + w / 2) + '" y="' + (y0 + 24) + '" text-anchor="middle" fill="' + blue + '" ' + f + ">a = " + fmt(a, 3) + "</text>";
+    s += '<text x="' + (x0 - 10) + '" y="' + (y0 - h / 2) + '" text-anchor="end" fill="' + red + '" ' + f + ">b = " + fmt(b, 3) + "</text>";
+    s += '<text x="' + (x0 + w / 2 + 12) + '" y="' + (y0 - h / 2 - 8) + '" text-anchor="start" fill="' + ink + '" ' + f + ">c = " + fmt(c, 3) + "</text>";
+    $("calcSvg").innerHTML = s;
+  }
+  function calc() {
+    var a = parseFloat($("inA").value), b = parseFloat($("inB").value), c = parseFloat($("inC").value);
+    var big = $("calcBig"), st = $("calcSteps"), out;
+    function bad(msg) { big.textContent = "—"; st.innerHTML = '<div class="err">' + msg + "</div>"; $("calcSvg").innerHTML = ""; }
+    if (mode === "c") {
+      if (!(a > 0) || !(b > 0)) return bad("Enter two positive numbers for a and b.");
+      c = Math.hypot(a, b); $("inC").value = fmt(c);
+      big.textContent = "c = " + fmt(c);
+      st.innerHTML = "<div>c² = a² + b²</div><div>c² = " + fmt(a) + "² + " + fmt(b) + "² = " + fmt(a * a) + " + " + fmt(b * b) + " = " + fmt(a * a + b * b) + "</div><div>c = √" + fmt(a * a + b * b) + " = " + fmt(c) + "</div>";
+      drawTri(a, b, c);
+    } else {
+      var known = mode === "a" ? b : a, kn = mode === "a" ? "b" : "a", un = mode;
+      if (!(known > 0) || !(c > 0)) return bad("Enter positive numbers for " + kn + " and c.");
+      if (c <= known) return bad("c is the longest side, so it must be larger than " + kn + ".");
+      out = Math.sqrt(c * c - known * known);
+      $(un === "a" ? "inA" : "inB").value = fmt(out);
+      big.textContent = un + " = " + fmt(out);
+      st.innerHTML = "<div>" + un + "² = c² − " + kn + "²</div><div>" + un + "² = " + fmt(c) + "² − " + fmt(known) + "² = " + fmt(c * c) + " − " + fmt(known * known) + " = " + fmt(c * c - known * known) + "</div><div>" + un + " = √" + fmt(c * c - known * known) + " = " + fmt(out) + "</div>";
+      drawTri(un === "a" ? out : a, un === "b" ? out : b, c);
+    }
+  }
+  ["inA", "inB", "inC"].forEach(function (id) { $(id).addEventListener("input", calc); });
+  document.querySelectorAll(".chip[data-t]").forEach(function (ch) {
+    ch.addEventListener("click", function () {
+      var p = ch.getAttribute("data-t").split(",");
+      $("m-c").click(); $("inA").value = p[0]; $("inB").value = p[1]; calc();
+    });
+  });
+  function check() {
+    var v = ["tx", "ty", "tz"].map(function (i) { return parseFloat($(i).value); });
+    var o = $("chkOut");
+    if (v.some(function (n) { return !(n > 0); })) { o.innerHTML = '<span class="err">Enter three positive lengths.</span>'; return; }
+    v.sort(function (p, q) { return p - q; });
+    var lhs = v[0] * v[0] + v[1] * v[1], rhs = v[2] * v[2];
+    if (v[0] + v[1] <= v[2]) { o.innerHTML = '<span class="pill no">Not a triangle</span><span>The two shorter sides must add to more than the longest.</span>'; return; }
+    var eps = 1e-9 * Math.max(lhs, rhs);
+    var kind = Math.abs(lhs - rhs) <= eps ? ["ok", "Right triangle"] : (lhs > rhs ? ["no", "Acute triangle"] : ["no", "Obtuse triangle"]);
+    o.innerHTML = '<span class="pill ' + kind[0] + '">' + kind[1] + "</span><span>" + fmt(v[0]) + "² + " + fmt(v[1]) + "² = " + fmt(lhs) + "</span><span>" + fmt(v[2]) + "² = " + fmt(rhs) + "</span>";
+  }
+  ["tx", "ty", "tz"].forEach(function (id) { $(id).addEventListener("input", check); });
+
+  /* ---------- 4. real-life figures ---------- */
+  var MONO = 'font-family="IBM Plex Mono, monospace"';
+  function ladder() {
+    var d = +$("ladD").value, L = 5, h = Math.sqrt(L * L - d * d), ang = Math.atan2(h, d) * 180 / Math.PI, k = 30;
+    $("ladDo").textContent = d.toFixed(1) + " m";
+    var ink = css("--ink"), blue = css("--blue"), red = css("--red"), muted = css("--muted");
+    var gy = 175, wx = 250, bx = wx - d * k, ty = gy - h * k;
+    var s = '<rect x="0" y="' + gy + '" width="300" height="25" fill="' + css("--ink-soft") + '"/>';
+    s += '<rect x="' + wx + '" y="10" width="26" height="' + (gy - 10) + '" fill="' + css("--ink-soft") + '" stroke="' + ink + '" stroke-width="2"/>';
+    s += '<line x1="' + wx + '" y1="' + gy + '" x2="' + bx + '" y2="' + gy + '" stroke="' + blue + '" stroke-width="3"/>';
+    s += '<line x1="' + wx + '" y1="' + gy + '" x2="' + wx + '" y2="' + ty + '" stroke="' + red + '" stroke-width="3"/>';
+    s += '<line x1="' + bx + '" y1="' + gy + '" x2="' + wx + '" y2="' + ty + '" stroke="' + ink + '" stroke-width="5" stroke-linecap="round"/>';
+    s += '<text x="' + ((bx + wx) / 2) + '" y="' + (gy + 18) + '" text-anchor="middle" fill="' + blue + '" font-size="13" ' + MONO + '>d = ' + d.toFixed(1) + '</text>';
+    s += '<text x="' + (wx - 8) + '" y="' + ((gy + ty) / 2) + '" text-anchor="end" fill="' + red + '" font-size="13" ' + MONO + '>h = ' + h.toFixed(2) + '</text>';
+    s += '<text x="' + ((bx + wx) / 2 - 8) + '" y="' + ((gy + ty) / 2 - 6) + '" text-anchor="end" fill="' + ink + '" font-size="13" ' + MONO + '>5 m</text>';
+    $("ladSvg").innerHTML = s;
+    var ok = ang >= 70 && ang <= 78;
+    $("ladR").innerHTML = "<span>reaches <b>" + h.toFixed(2) + " m</b></span><span>angle <b>" + ang.toFixed(0) + "°</b></span><span class=\"pill " + (ok ? "ok" : "no") + "\">" + (ok ? "near the safe 75°" : (ang < 70 ? "too flat" : "too steep")) + "</span>";
+  }
+  function tv() {
+    var d = +$("tvD").value, r = $("tvR").value.split(",").map(Number), n = Math.hypot(r[0], r[1]);
+    var w = d * r[0] / n, h = d * r[1] / n;
+    $("tvDo").textContent = d + "″";
+    var sc = Math.min(250 / w, 140 / h), W = w * sc, H = h * sc, x0 = (300 - W) / 2, y0 = (200 - H) / 2;
+    var ink = css("--ink"), blue = css("--blue"), red = css("--red");
+    var s = '<rect x="' + x0 + '" y="' + y0 + '" width="' + W + '" height="' + H + '" fill="' + css("--blue-soft") + '" stroke="' + ink + '" stroke-width="4"/>';
+    s += '<line x1="' + x0 + '" y1="' + (y0 + H) + '" x2="' + (x0 + W) + '" y2="' + y0 + '" stroke="' + ink + '" stroke-width="2.5" stroke-dasharray="6 5"/>';
+    s += '<text x="' + (x0 + W / 2) + '" y="' + (y0 + H + 17) + '" text-anchor="middle" fill="' + blue + '" font-size="13" ' + MONO + '>width ' + w.toFixed(1) + '″</text>';
+    s += '<text x="' + (x0 - 8) + '" y="' + (y0 + H / 2 + 4) + '" text-anchor="end" fill="' + red + '" font-size="13" ' + MONO + '>' + h.toFixed(1) + '″</text>';
+    s += '<text x="' + (x0 + W / 2 + 8) + '" y="' + (y0 + H / 2 - 6) + '" fill="' + ink + '" font-size="13" ' + MONO + '>' + d + '″</text>';
+    $("tvSvg").innerHTML = s;
+    $("tvRd").innerHTML = "<span>width <b>" + w.toFixed(1) + "″</b> (" + (w * 2.54).toFixed(0) + " cm)</span><span>height <b>" + h.toFixed(1) + "″</b> (" + (h * 2.54).toFixed(0) + " cm)</span>";
+  }
+  function field() {
+    var a = +$("fdW").value, b = +$("fdH").value, c = Math.hypot(a, b);
+    $("fdWo").textContent = a + " m"; $("fdHo").textContent = b + " m";
+    var sc = Math.min(230 / a, 130 / b), W = a * sc, H = b * sc, x0 = (300 - W) / 2, y0 = (200 - H) / 2;
+    var ink = css("--ink"), blue = css("--blue"), red = css("--red");
+    var s = '<rect x="' + x0 + '" y="' + y0 + '" width="' + W + '" height="' + H + '" fill="' + css("--ink-soft") + '" stroke="' + ink + '" stroke-width="1.5"/>';
+    s += '<polyline points="' + x0 + "," + (y0 + H) + " " + (x0 + W) + "," + (y0 + H) + " " + (x0 + W) + "," + y0 + '" fill="none" stroke="' + blue + '" stroke-width="4" stroke-linejoin="round"/>';
+    s += '<line x1="' + x0 + '" y1="' + (y0 + H) + '" x2="' + (x0 + W) + '" y2="' + y0 + '" stroke="' + red + '" stroke-width="4" stroke-dasharray="9 6"/>';
+    s += '<text x="' + (x0 + W / 2) + '" y="' + (y0 + H + 18) + '" text-anchor="middle" fill="' + blue + '" font-size="13" ' + MONO + '>' + a + ' m</text>';
+    s += '<text x="' + (x0 + W + 8) + '" y="' + (y0 + H / 2 + 4) + '" fill="' + blue + '" font-size="13" ' + MONO + '>' + b + ' m</text>';
+    s += '<text x="' + (x0 + W / 2 - 10) + '" y="' + (y0 + H / 2 - 8) + '" text-anchor="end" fill="' + red + '" font-size="13" ' + MONO + '>' + c.toFixed(1) + ' m</text>';
+    $("fdSvg").innerHTML = s;
+    var saved = a + b - c;
+    $("fdR").innerHTML = "<span>edges <b>" + (a + b) + " m</b></span><span>diagonal <b>" + c.toFixed(1) + " m</b></span><span>saved <b>" + saved.toFixed(1) + " m (" + (saved / (a + b) * 100).toFixed(0) + "%)</b></span>";
+  }
+  function carp() {
+    var d = +$("cpD").value;
+    var cosT = (9 + 16 - d * d) / 24, ang = Math.acos(Math.max(-1, Math.min(1, cosT))) * 180 / Math.PI;
+    $("cpDo").textContent = d.toFixed(2);
+    var ink = css("--ink"), blue = css("--blue"), red = css("--red"), k = 42, ox = 70, oy = 175, th = ang * Math.PI / 180;
+    var ax = ox + 3 * k, ay = oy, bx = ox + 4 * k * Math.cos(th), by = oy - 4 * k * Math.sin(th);
+    var ok = Math.abs(ang - 90) < 0.5;
+    var s = '<line x1="' + ox + '" y1="' + oy + '" x2="' + (ox + 3.6 * k) + '" y2="' + oy + '" stroke="' + ink + '" stroke-width="7" stroke-linecap="round" opacity=".35"/>';
+    s += '<line x1="' + ox + '" y1="' + oy + '" x2="' + (ox + 4.6 * k * Math.cos(th)) + '" y2="' + (oy - 4.6 * k * Math.sin(th)) + '" stroke="' + ink + '" stroke-width="7" stroke-linecap="round" opacity=".35"/>';
+    s += '<line x1="' + ax + '" y1="' + ay + '" x2="' + bx + '" y2="' + by + '" stroke="' + (ok ? css("--green") : red) + '" stroke-width="3" stroke-dasharray="7 5"/>';
+    s += '<circle cx="' + ax + '" cy="' + ay + '" r="5" fill="' + blue + '"/><circle cx="' + bx + '" cy="' + by + '" r="5" fill="' + red + '"/>';
+    s += '<text x="' + ((ox + ax) / 2) + '" y="' + (oy + 22) + '" text-anchor="middle" fill="' + blue + '" font-size="13" ' + MONO + '>3 units</text>';
+    s += '<text x="' + ((ox + bx) / 2 - 10) + '" y="' + ((oy + by) / 2) + '" text-anchor="end" fill="' + red + '" font-size="13" ' + MONO + '>4 units</text>';
+    s += '<text x="' + (ox + 14) + '" y="' + (oy - 12) + '" fill="' + ink + '" font-size="13" ' + MONO + '>' + ang.toFixed(1) + '°</text>';
+    $("cpSvg").innerHTML = s;
+    $("cpR").innerHTML = "<span>corner angle <b>" + ang.toFixed(1) + "°</b></span><span class=\"pill " + (ok ? "ok" : "no") + "\">" + (ok ? "square" : (ang > 90 ? "opens too wide" : "too tight")) + "</span>";
+  }
+  function ramp() {
+    var rise = +$("rpH").value, ratio = +$("rpS").value, run = rise * ratio, len = Math.hypot(rise, run);
+    $("rpHo").textContent = rise + " cm";
+    var sc = Math.min(250 / run, 120 / rise), W = run * sc, H = rise * sc, x0 = (300 - W) / 2, y0 = 170;
+    var ink = css("--ink"), blue = css("--blue"), red = css("--red");
+    var s = poly([[x0, y0], [x0 + W, y0], [x0 + W, y0 - H]], { fill: css("--blue-soft"), stroke: ink, "stroke-width": 3, "stroke-linejoin": "round" });
+    s += '<text x="' + (x0 + W / 2) + '" y="' + (y0 + 20) + '" text-anchor="middle" fill="' + blue + '" font-size="13" ' + MONO + '>run ' + (run / 100).toFixed(2) + ' m</text>';
+    s += '<text x="' + (x0 + W + 8) + '" y="' + (y0 - H / 2 + 4) + '" fill="' + red + '" font-size="13" ' + MONO + '>' + rise + ' cm</text>';
+    s += '<text x="' + (x0 + W / 2 - 6) + '" y="' + (y0 - H / 2 - 8) + '" text-anchor="end" fill="' + ink + '" font-size="13" ' + MONO + '>ramp ' + (len / 100).toFixed(2) + ' m</text>';
+    $("rpSvg").innerHTML = s;
+    $("rpR").innerHTML = "<span>run <b>" + (run / 100).toFixed(2) + " m</b></span><span>surface <b>" + (len / 100).toFixed(2) + " m</b></span><span>angle <b>" + (Math.atan2(rise, run) * 180 / Math.PI).toFixed(1) + "°</b></span>";
+  }
+
+  /* point distance (draggable) */
+  var P = [[2, 6], [10, 1]], dragI = -1;
+  function dist() {
+    var ink = css("--ink"), blue = css("--blue"), red = css("--red"), line = css("--line"), s = "";
+    for (var i = 0; i <= 12; i++) s += '<line x1="' + i + '" y1="0" x2="' + i + '" y2="8" stroke="' + line + '" stroke-width="0.05"/>';
+    for (var j = 0; j <= 8; j++) s += '<line x1="0" y1="' + j + '" x2="12" y2="' + j + '" stroke="' + line + '" stroke-width="0.05"/>';
+    var A = P[0], B = P[1], dx = Math.abs(B[0] - A[0]), dy = Math.abs(B[1] - A[1]), d = Math.hypot(dx, dy);
+    var cx = B[0], cy = A[1];
+    s += '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + cx + '" y2="' + cy + '" stroke="' + blue + '" stroke-width="0.14"/>';
+    s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + B[0] + '" y2="' + B[1] + '" stroke="' + red + '" stroke-width="0.14"/>';
+    s += '<line x1="' + A[0] + '" y1="' + A[1] + '" x2="' + B[0] + '" y2="' + B[1] + '" stroke="' + ink + '" stroke-width="0.16" stroke-dasharray="0.4 0.3"/>';
+    s += '<circle class="handle" data-i="0" cx="' + A[0] + '" cy="' + A[1] + '" r="0.42" fill="' + blue + '" stroke="' + css("--paper") + '" stroke-width="0.1"/>';
+    s += '<circle class="handle" data-i="1" cx="' + B[0] + '" cy="' + B[1] + '" r="0.42" fill="' + red + '" stroke="' + css("--paper") + '" stroke-width="0.1"/>';
+    $("dsSvg").innerHTML = s;
+    $("dsR").innerHTML = "<span class=\"a-col\">dx = <b>" + dx + "</b></span><span class=\"b-col\">dy = <b>" + dy + "</b></span><span>distance = √(" + (dx * dx) + " + " + (dy * dy) + ") = <b>" + d.toFixed(2) + "</b></span>";
+  }
+  var ds = $("dsSvg");
+  function toUnits(e) {
+    var r = ds.getBoundingClientRect(), vb = ds.viewBox.baseVal;
+    var x = vb.x + (e.clientX - r.left) / r.width * vb.width, y = vb.y + (e.clientY - r.top) / r.height * vb.height;
+    return [Math.max(0, Math.min(12, Math.round(x))), Math.max(0, Math.min(8, Math.round(y)))];
+  }
+  ds.addEventListener("pointerdown", function (e) {
+    var t = toUnits(e), best = -1, bd = 1.6;
+    P.forEach(function (p, i) { var dd = Math.hypot(p[0] - t[0], p[1] - t[1]); if (dd < bd) { bd = dd; best = i; } });
+    if (best >= 0) { dragI = best; ds.setPointerCapture(e.pointerId); }
+  });
+  ds.addEventListener("pointermove", function (e) {
+    if (dragI < 0) return;
+    var t = toUnits(e);
+    if (t[0] !== P[dragI][0] || t[1] !== P[dragI][1]) { P[dragI] = t; dist(); }
+  });
+  ["pointerup", "pointercancel"].forEach(function (n) { ds.addEventListener(n, function () { dragI = -1; }); });
+
+  function redrawAll() { drawSquares(); drawProof(); calc(); ladder(); tv(); field(); carp(); ramp(); dist(); }
+
+  bind(["sqA", "sqB"], drawSquares);
+  bind(["prA", "prB"], drawProof);
+  calc(); check();
+  bind(["ladD"], ladder);
+  bind(["tvD", "tvR"], tv);
+  bind(["fdW", "fdH"], field);
+  bind(["cpD"], carp);
+  bind(["rpH", "rpS"], ramp);
+  dist();
+})();
+</script>
+
+</body></html>
